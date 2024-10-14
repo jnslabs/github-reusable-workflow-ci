@@ -2,6 +2,16 @@ name: Maven
 
 on:
     workflow_call:
+      inputs:
+        sonar_project_key:
+          required: true
+          type: string
+        sonar_organization:
+          required: true
+          type: string
+      secrets:
+        SONAR_TOKEN:
+          required: true
 
 jobs:
   build:
@@ -35,4 +45,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=jnslabs_clines-api
+      run: mvn sonar:sonar \
+           -Dsonar.projectKey=${{ inputs.sonar_project_key }} \
+           -Dsonar.organization=${{ inputs.sonar_organization }} \
+           -Dsonar.host.url=https://sonarcloud.io
